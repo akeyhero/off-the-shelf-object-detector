@@ -5,7 +5,17 @@ services:
       context: .
       target: development
     image: off-the-shelf-object-detector-dev:latest
+    volumes:
+      - ./app:/app
+      - socket:/socket
+  nginx:
+    build:
+      context: nginx
+    image: nginx-uwsgi:latest
     ports:
       - '${PORT:-5000}:80'
     volumes:
-      - ./app:/app
+      - socket:/socket
+volumes:
+  socket:
+    driver: local
