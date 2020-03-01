@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  app:
+    build:
+      context: .
+    image: off-the-shelf-object-detector:latest
+    volumes:
+      - ./app:/app
+      - socket:/run/uvicorn
+  nginx:
+    build:
+      context: nginx
+    image: off-the-shelf-object-detector-nginx:latest
+    ports:
+      - '${PORT:-8000}:80'
+    volumes:
+      - ./app:/app
+      - socket:/run/uvicorn
+volumes:
+  socket:
+    driver: local

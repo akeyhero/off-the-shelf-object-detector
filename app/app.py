@@ -1,34 +1,50 @@
 import os
+from typing import List
+from threading import Lock
 
-from flask import Flask, request, jsonify
-import uwsgidecorators
+from fastapi import FastAPI, File
+from pydantic import BaseModel
 
 from detector import Detector
 
 
-app = Flask(__name__)
-
 HUB_MODEL_URL = os.environ['HUB_MODEL_URL']
 
+app = FastAPI(
+    title="Off-the-shelf Object Detector",
+    description="Off-the-shelf Object Detection API with a model in Tensorflow Hub",
+    version="0.0.0",
+)
+lock = Lock()
 
-@app.route('/', methods=['GET'])
+
+class RootOut(BaseModel):
+    message: str
+
+
+class DetectOut(BaseModel):
+    message: str
+    result: List[List[float]]
+
+
+@app.get('/', response_model=RootOut)
 def root():
-    return jsonify({'message': 'OK'}), 200
+    return RootOut(message='OK')
 
  
-@app.route('/detect', methods=['POST'])
-def detect():
-    global detector
-    if 'file' in request.files:
-        image_bin = request.files['file'].stream.read()
-        result = detector.detect(image_bin)
-        return jsonify({'result': result}), 200
-    else:
-        return jsonify({'message': 'Unprocessible Entity'}), 422
+@app.post('/detect', response_model=DetectOut)
+def detect(file: bytes = File(...)):
+    global detector, lock
+    with lock:
+        result = detector.detect(file)
+    return DetectOut(message='OK', result= result)
 
 
-@uwsgidecorators.postfork
 def prepare():
-    global detector
-    detector = Detector(HUB_MODEL_URL)
-    detector.prepare()
+    global detector, lock
+    with lock:
+        detector = Detector(HUB_MODEL_URL)
+        detector.prepare()
+
+
+prepare()

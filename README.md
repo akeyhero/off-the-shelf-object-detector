@@ -8,11 +8,18 @@ This is an off-the-shelf object detection API built with an off-the-shelf model 
 docker-compose up
 ```
 
-To run this in production, e.g.,
-you will need to modify `build.target` to `production` in `docker-compose.yml` and remove `volumes`.
+To run in production, e.g.,
+
+```bash
+docker-compose -f docker-compose_production.yml up
+```
 
 ## To detect objects
 
 ```bash
-curl -XPOST -F file=@path/to/image.jpg localhost:5000/detect
+curl -XPOST -F file=@path/to/image.jpg localhost:8000/detect
 ```
+
+## API docs
+
+Visit: [localhost:8000/redoc](http://localhost:8000/redoc)

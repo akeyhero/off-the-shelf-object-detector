@@ -14,18 +14,6 @@ WORKDIR /app
 COPY app/detector.py /app/
 RUN (echo 'from detector import Detector'; echo 'Detector("'${HUB_MODEL_URL}'").prepare()') | python
 
-COPY uwsgi.ini /
-
-
-# --- development ---
-FROM base as development
-
-CMD ["uwsgi", "--ini=/uwsgi.ini:development"]
-
-
-# --- production ---
-FROM base as production
-
 COPY app /app
 
-CMD ["uwsgi", "--ini=/uwsgi.ini"]
+CMD ["uvicorn", "app:app", "--uds=/run/uvicorn/app.sock"]
