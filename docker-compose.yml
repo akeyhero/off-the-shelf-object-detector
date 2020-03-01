@@ -6,7 +6,7 @@ services:
       args:
         HUB_MODEL_URL: https://tfhub.dev/google/openimages_v4/ssd/mobilenet_v2/1
     image: off-the-shelf-object-detector:latest
-    command: ["uvicorn", "app:app", "--host=0", "--reload"]
+    command: ["uvicorn", "app:app", "--host=0", "--log-level=trace", "--use-colors", "--reload"]
     ports:
       - '127.0.0.1:${PORT:-8000}:8000'
     volumes:

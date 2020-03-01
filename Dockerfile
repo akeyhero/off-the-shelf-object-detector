@@ -16,4 +16,4 @@ RUN (echo 'from detector import Detector'; echo 'Detector("'${HUB_MODEL_URL}'").
 
 COPY app /app
 
-CMD ["uvicorn", "app:app", "--uds=/run/uvicorn/app.sock"]
+CMD ["uvicorn", "app:app", "--uds=/run/uvicorn/app.sock", "--use-colors"]
